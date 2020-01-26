@@ -43,6 +43,25 @@ public class VerbosTest extends BaseTest {
 
     }
 
+
+    @Test
+    public void deveAlterarUsuario(){
+        given()
+                .contentType("application/json")
+                .body("{ \"name\":\"Usuário Alterado\", \"age\":80 }")
+                .when()
+                .put("/users/1")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("id", is(1))
+                .body("name", is("Usuário Alterado"))
+                .body("age", is(80))
+                .body("salary", is(1234.5678f))
+        ;
+    }
+
+
     @Test
     public void deveSalvarUsuarioViaXML(){
         given()

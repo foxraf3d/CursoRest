@@ -76,6 +76,7 @@ public class UserJsonTest extends BaseTest {
     public void deveRetornarErroUsuarioInexistente(){
         given()
                 .when()
+//                .param("users","4")
                 .get("/users/4")
                 .then()
                 .body("error", is("Usuário inexistente"))
