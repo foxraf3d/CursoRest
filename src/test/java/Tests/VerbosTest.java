@@ -62,6 +62,26 @@ public class VerbosTest extends BaseTest {
     }
 
 
+
+    @Test
+    public void deveCustomizarURL(){
+        given()
+                .contentType("application/json")
+                .body("{ \"name\":\"Usuário Alterado\", \"age\":80 }")
+                .pathParam("entidade","users")
+                .pathParam("userId","1")
+                .when()
+                .put("/{entidade}/{userId}")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("id", is(1))
+                .body("name", is("Usuário Alterado"))
+                .body("age", is(80))
+                .body("salary", is(1234.5678f))
+        ;
+    }
+
     @Test
     public void deveSalvarUsuarioViaXML(){
         given()
@@ -78,6 +98,30 @@ public class VerbosTest extends BaseTest {
         ;
     }
 
+    @Test
+    public void deveRemoverUsuario(){
+        given()
+                .log().all()
+                .when()
+                .delete("/users/1")
+                .then()
+                .log().all()
+                .statusCode(204)
+        ;
+    }
+
+    @Test
+    public void naoDeveRemoverUsuarioInexistente(){
+        given()
+                .log().all()
+                .when()
+                .delete("/users/1000")
+                .then()
+                .log().all()
+                .statusCode(400)
+                .body("error", is("Registro inexistente"))
+        ;
+    }
 
 
 
