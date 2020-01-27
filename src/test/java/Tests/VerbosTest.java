@@ -1,13 +1,19 @@
 package Tests;
 
 import Core.BaseTest;
+import Entity.User;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 public class VerbosTest extends BaseTest {
 
@@ -26,6 +32,76 @@ public class VerbosTest extends BaseTest {
                 .body("age", is(50))
         ;
     }
+
+    @Test
+    public void deveSalvarUsuarioUsandoMAP(){
+        /*Nota: Para Serialiar ou Deserializar usando MAP,
+        é necessario utilizar o pacote GSON que se encontra
+        no MavenRepository */
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", "Usuário via MAP");
+        params.put("age", 25);
+
+        given()
+                .contentType("application/json")
+                .body(params)
+                .when()
+                .post("/users")
+                .then()
+                .log().all()
+                .statusCode(201)
+                .body("id", is(notNullValue()))
+                .body("name", is("Usuário via MAP"))
+                .body("age", is(25))
+        ;
+    }
+
+    @Test
+    public void deveSalvarUsuarioUsandoObjeto(){
+        /*Nota: Para Serialiar ou Deserializar usando Objeto,
+        é necessario utilizar o pacote GSON que se encontra
+        no MavenRepository */
+        User user = new User("Usuario via Objeto", 25);
+
+        given()
+                .contentType("application/json")
+                .body(user)
+                .when()
+                .post("/users")
+                .then()
+                .log().all()
+                .statusCode(201)
+                .body("id", is(notNullValue()))
+                .body("name", is("Usuario via Objeto"))
+                .body("age", is(25))
+        ;
+    }
+
+
+    @Test
+    public void deveDeserializarObjetoAoSalvarUsuario(){
+        /*Nota: Para Serialiar ou Deserializar usando Objeto,
+        é necessario utilizar o pacote GSON que se encontra
+        no MavenRepository */
+        User user = new User("Usuario deserializado", 25);
+
+        User usuarioInserido =
+                given()
+                        .contentType("application/json")
+                        .body(user)
+                        .when()
+                        .post("/users")
+                        .then()
+                        .log().all()
+                        .statusCode(201)
+                        .extract().body().as(User.class)
+                ;
+        System.out.println(usuarioInserido);
+        assertThat(usuarioInserido.getId(), notNullValue() );
+        assertEquals("Usuario deserializado", usuarioInserido.getName());
+        assertThat(usuarioInserido.getAge(), is(25));
+    }
+
 
     @Test
     public void naoDeveSalvarUsuarioSemNome(){
