@@ -199,6 +199,43 @@ public class VerbosTest extends BaseTest {
         ;
     }
 
+    @Test
+    public void deveSalvarUsuarioViaXMLUsandoObjeto(){
+        User user = new User("Usuario XML", 40);
+        given()
+                .contentType(ContentType.XML)
+                .body(user)
+                .when()
+                .post("/usersXML")
+                .then()
+                .log().all()
+                .statusCode(201)
+                .body("user.@id", is(notNullValue()))
+                .body("user.name", is("Usuario XML"))
+                .body("user.age", is("40"))
+        ;
+    }
+
+    @Test
+    public void deveDeserializarXMLAoSalvarUsuario(){
+        User user = new User("Usuario XML", 40);
+        User usuarioInserido =
+                given()
+                        .contentType(ContentType.XML)
+                        .body(user)
+                        .when()
+                        .post("/usersXML")
+                        .then()
+                        .log().all()
+                        .statusCode(201)
+                        .extract().body().as(User.class)
+                ;
+        assertThat(usuarioInserido.getId(), notNullValue());
+        assertThat(usuarioInserido.getName(), is("Usuario XML"));
+        assertThat(usuarioInserido.getAge(), is(40));
+        assertThat(usuarioInserido.getSalary(), nullValue());
+    }
+
 
 
 }

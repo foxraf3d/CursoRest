@@ -33,6 +33,8 @@ public class BaseTest {
         RestAssured.requestSpecification = reqSpec;
         RestAssured.responseSpecification = resSpec;
 
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+
     }
 
     @After
